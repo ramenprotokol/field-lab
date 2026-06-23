@@ -1,0 +1,42 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# editor / local
+.vscode/
+.idea/
+
+# privacy: never track anything in these
+private/
+_private/
+*.draft.md
+
+# the raw design-tool export is a local reference only — it is not used by the
+# build and carries stale, unreviewed strings, so it never ships in the repo
+design/

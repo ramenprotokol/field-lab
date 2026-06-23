@@ -1,0 +1,19 @@
+# Cloudflare Pages security headers.
+# Applied to every response. The site is fully static (no API, no user input),
+# so the main goals are anti-clickjacking, MIME sniffing, and a tight CSP.
+#
+# Note on 'unsafe-inline': a static Next.js export inlines its hydration script
+# (self.__next_f) and next/font's @font-face styles, and static export cannot
+# emit per-request nonces — so script-src/style-src must allow inline. All other
+# directives stay locked down; there are no third-party origins to allow.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests
+
+# Long-cache the immutable hashed build assets.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
