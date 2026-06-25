@@ -243,6 +243,25 @@ export const projects: Project[] = [
     stack: "Markdown · CI",
     github: `${site.github}/ai-delivery-engineering`,
   },
+  {
+    name: "delivery-gate",
+    tag: "TOOLING",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "A CLI that gives a hard GO/NO-GO on a release: it enforces a release-readiness checklist with machine auto-checks plus a human-attested `release.yaml` manifest.",
+    problem:
+      "A release checklist in a doc is easy to skip under pressure — and a machine can only verify half of it; the rest is human judgment no script can prove.",
+    approach:
+      "Pluggable checks behind one interface: four AUTO checks (changelog, CI status, pinned deps, clean tagged release point) plus attestations a human signs in `release.yaml`. Exit-code driven so CI can actually block a release.",
+    validation:
+      "48 tests · green CI · ruff-clean · v0.1.0, MIT. It gates its own releases. An adversarial pass fixed three crash-on-malformed-manifest bugs.",
+    findings:
+      "Every result is labeled AUTO (machine-proven) or ATTESTED (human-claimed), and the tool never upgrades one to the other — it stays honest about what it cannot verify.",
+    lessons: "Enforce the checklist, don't just publish it. Label what's proven vs. trusted.",
+    stack: "Python · pytest · ruff",
+    github: `${site.github}/delivery-gate`,
+  },
   // Concept repos — clearly PLANNED, no fabricated operational metrics.
   {
     name: "spec-lint",
