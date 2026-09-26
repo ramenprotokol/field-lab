@@ -262,6 +262,25 @@ export const projects: Project[] = [
     stack: "Python · pytest · ruff",
     github: `${site.github}/delivery-gate`,
   },
+  {
+    name: "control-room",
+    tag: "TOOLING",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "A five-minute training drill and a real-repository workflow that directs AI coding agents through a visible Scout → Builder → Verifier chain, gated by human approval at every consequential step.",
+    problem:
+      "AI coding agents are usually given a vague instruction and broad write access, so a bad change can reach the working tree before anyone checks the evidence behind it.",
+    approach:
+      "Trial Mode rehearses the workflow with no account or repo. Real Mode runs three separate Codex SDK agent roles — a read-only Scout, a Builder confined to an isolated Git worktree, and a read-only Verifier — and requires explicit human approval before evidence, patch, or apply proceeds.",
+    validation:
+      "22 tests · green CI · MIT. Submitted to OpenAI Build Week 2026, Education track.",
+    findings:
+      "Splitting investigation, construction, and verification across roles that can't approve their own handoff catches what a single unsupervised agent would have shipped.",
+    lessons: "Give the human every consequential gate, not just the final one — isolation without an approval boundary isn't supervision.",
+    stack: "React · TypeScript · Cloudflare Workers · Codex SDK",
+    github: `${site.github}/openai-build-week-2026`,
+  },
   // Concept repos — clearly PLANNED, no fabricated operational metrics.
   {
     name: "spec-lint",
