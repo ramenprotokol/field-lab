@@ -204,6 +204,204 @@ export type Project = {
   github: string | null;
 };
 
+/**
+ * Ten languages, ten small apps: one small browser app per language. Kept as its
+ * own list so the Proof Wall can show the series as a group; every entry is
+ * also part of `projects` below.
+ */
+export const languageApps: Project[] = [
+  {
+    name: "overprint",
+    tag: "TOOLING",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Turns any photo into a two-ink risograph-style print in the browser. All the image processing is Rust compiled to a ~36 KiB WebAssembly module; the photo never leaves the device.",
+    problem:
+      "A convincing riso look needs real plate separation, dithering and mis-registration — and 'WASM is faster' is usually asserted, not measured.",
+    approach:
+      "Rust does the work in integer maths: a least-squares split into two ink plates, Floyd–Steinberg, Atkinson or blue-noise dithering, seeded grain, a whole-dot registration shift, and multiplied overprinting. A line-for-line JavaScript port races it on the visitor's own machine.",
+    validation:
+      "35 Rust tests · 40 JS tests, including 1,000+ byte-for-byte comparisons of the JS port against the WASM build and a headless-Chrome run. Native Rust, wasm32 and JS hit the same golden fingerprints. MIT.",
+    findings:
+      "Modern JS engines are good at typed-array loops, so the speed margin is real but modest and varies by device; the page measures it live instead of quoting a number. The stronger case for Rust is bit-exact determinism.",
+    lessons: "Measure the speed claim on the user's machine, or don't make it.",
+    stack: "Rust · WebAssembly · JavaScript",
+    github: `${site.github}/overprint`,
+  },
+  {
+    name: "sky-report",
+    tag: "SYSTEM",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Type an airport code and see the real current sky, ray-marched in a GLSL fragment shader from that airport's live METAR weather report.",
+    problem:
+      "A METAR (BKN025 27015KT 9999) describes the sky precisely, but to most people it reads like line noise.",
+    approach:
+      "A WebGL2 shader integrates atmospheric scattering and ray-marches each reported cloud layer as a volume; visibility becomes haze, wind moves the clouds, and the sun sits where it was at observation time. TypeScript parses the report and sets every shader input; a cached Cloudflare Worker proxies aviationweather.gov.",
+    validation:
+      "186 unit tests · 14 headless-Chrome tests. The parser is cross-checked against the Aviation Weather Center's own decoder on 400 real reports; sun elevation matches astropy to 0.03° on 12 cases; cloud cover seen from below is within 0.9 points of the reported amount across 18 reports. MIT.",
+    findings:
+      "Coverage was only honest after calibration: seen from below, a thick layer covers more sky than any one slice of it. Cloud shapes are still procedural — a METAR gives amount and base, nothing else — and the page says which parts are data and which are style.",
+    lessons: "Separate the data from the style on screen, then measure the data.",
+    stack: "GLSL · TypeScript · Cloudflare Workers",
+    github: `${site.github}/sky-report`,
+  },
+  {
+    name: "small-print",
+    tag: "AI EVALUATION",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Paste a Terms of Service; get a clause-by-clause map of who each clause favours, each reading pinned to an exact quote checked against your text.",
+    problem:
+      "A model's summary of legal text sounds confident, and a paraphrase gives you nothing to check it against.",
+    approach:
+      "A Python Worker (Pyodide on Cloudflare) splits the text into clauses and asks Claude for a structured reading of each. Every quote must be an exact substring inside the clause it labels; readings that fail are dropped and counted on the page. A Durable Object caps daily model calls; D1 caches verified results.",
+    validation:
+      "164 pytest · 23 Node tests, plus an end-to-end run of the real Worker in local workerd against a mocked Messages API. No paid API calls were made while building it; demo mode reads three fictional exhibits. MIT.",
+    findings:
+      "The verifier proves a quote is in the text, not that the label is right — so no reading appears without its source clause. CPU time on the free plan and real token use stay unmeasured until it is deployed.",
+    lessons: "Check the model's evidence mechanically, and count what you throw away.",
+    stack: "Python · Cloudflare Workers · D1 · Claude API",
+    github: `${site.github}/small-print`,
+  },
+  {
+    name: "silt",
+    tag: "SYSTEM",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Paint a mountain and watch 10,000 years of rain carve river valleys and build small deltas. The whole erosion model runs in a 32 KiB Zig WebAssembly module.",
+    problem:
+      "Erosion toys often look plausible while quietly creating or losing water and rock, and their rivers are traced from noisy water depth.",
+    approach:
+      "A virtual-pipe hydraulic-erosion model (Mei et al., 2007) with conservative sediment transport that books every source and sink, in Zig with @Vector SIMD and no allocation per step. Rivers come from a separate drainage survey — Priority-Flood pit filling, D8 routing, flow accumulation — that the physics never reads.",
+    validation:
+      "29 Zig tests · 28 Node tests, plus headless Chrome. Water and material books balance every step (a deliberate 0.1% leak fails both tests); the SIMD build matches scalar bit for bit; delta growth tracks river discharge at r = 0.80 on the 512² grid. MIT.",
+    findings:
+      "The deltas are modest (15–20 cells of new coast) and the delta test is fragile: r = 0.54 at 256², 0.39 on another survey, and nearby parameters swung it from about −0.5 to 0.8. The README says so.",
+    lessons: "Book every source and sink — a conservation test catches what a screenshot won't.",
+    stack: "Zig · WebAssembly · WebGL2",
+    github: `${site.github}/silt`,
+  },
+  {
+    name: "tide-table",
+    tag: "RELIABILITY",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Paste a cron expression and see the next year of firings as an almanac across time zones, with a red seam wherever daylight saving skips a job, runs it twice, or shifts it.",
+    problem:
+      "Cron implementations disagree about clock changes, and a job that is skipped, or runs twice, on the night the clocks change is easy to miss in review.",
+    approach:
+      "The engine is robfig/cron v3.0.1, the library Kubernetes uses to parse CronJob schedules, compiled with Go to WebAssembly, so the page shows that library's real behaviour rather than a re-implementation. For every day it compares the library's firings with a plain wall-clock reading and names each difference.",
+    validation:
+      "34 Go tests · 41 JS tests. An equivalence test checks the fast walk against the plain library walk in all 598 tz zones: 9.15 million firings, 0 mismatches. The full exhaustive sweep has not finished, so this is sampling plus careful reasoning, not a formal proof. MIT.",
+    findings:
+      "The tests found a quirk in Go itself: with the slim tz data built into WebAssembly, Time.ZoneBounds reports the period around 31 December of a leap year as ending before the time asked about. The engine corrects for it and a test pins it.",
+    lessons: "Model the library production actually runs, then test the model against it.",
+    stack: "Go · WebAssembly · JavaScript",
+    github: `${site.github}/tide-table`,
+  },
+  {
+    name: "paren",
+    tag: "TOOLING",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "A stepper for a small teaching subset of Clojure: paste an expression and watch it evaluate one substitution at a time, with the environment beside it.",
+    problem:
+      "A REPL shows only the final value, so evaluation order, scope and closures stay invisible.",
+    approach:
+      "All ClojureScript: the real Clojure reader turns text into data, a small-step evaluator reduces one redex at a time in Clojure's order, and persistent data structures keep every state, so stepping back is just indexing. Anything outside the subset is refused by name before a step runs.",
+    validation:
+      "55 ClojureScript tests with 819 assertions, including golden caption sequences for every example and 71 hostile inputs that must end in a clear status · 11 Node and headless-Chrome tests. MIT, with EPL-1.0 and Apache-2.0 notices for the compiled bundle.",
+    findings:
+      "It is a subset, not Clojure: no macros, lazy sequences, destructuring or loop/recur, and map and filter are eager. About 65% of the 70 KiB gzipped bundle is cljs.core. Tested in Chrome only.",
+    lessons: "Refuse what you don't support, by name, instead of half-supporting it.",
+    stack: "ClojureScript · shadow-cljs",
+    github: `${site.github}/paren`,
+  },
+  {
+    name: "single-track",
+    tag: "SYSTEM",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "A timetable puzzle drawn as a Marey diagram: run trains on a single-track line without a collision, across thirteen hand-designed plates.",
+    problem:
+      "A puzzle's par is only fair if it is the true minimum — and a search that finds a good timetable doesn't prove there is no better one.",
+    approach:
+      "The rules, schedule and conflict detection are pure Elm functions of one immutable value, so undo and redo are two stacks. Exhaustive custom types (HeadOn | RearEnd | Crowded) kept the rules consistent while they changed. A Node mirror of the rules searches for each plate's par and proves it.",
+    validation:
+      "159 elm-test · 41 Node and headless-Chrome tests. Par is proven optimal for plates I–VIII: all 15,312,644 timetables with less waiting were tried and none solves its plate. The mirror agrees with the Elm rules on 741 timetables. MIT.",
+    findings:
+      "Plates IX–XIII have far too many timetables to try (plate IX alone about 6 × 10¹⁰), so their par is labelled heuristic and the stamp says so if you beat it. The proof runs on the mirror, not on the Elm code itself.",
+    lessons: "Prove what you can; label the rest as a heuristic.",
+    stack: "Elm · SVG",
+    github: `${site.github}/single-track`,
+  },
+  {
+    name: "sideband",
+    tag: "SYSTEM",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "A six-operator FM synth written in freestanding C, compiled to WebAssembly and run in the browser's audio thread. Every sound is a shareable link.",
+    problem:
+      "Browser audio code must be deterministic, never allocate, and stay safe for the listener's ears, even when fed an extreme patch or a hostile link.",
+    approach:
+      "C11 with no libc, libm or heap: 8 voices × 6 operators, 8 algorithms, per-sample smoothing of every edit, then a compressor, a −3 dBFS peak limiter and a −1 dBFS hard ceiling. zig cc builds a 14.8 KB module with no imports that runs inside an AudioWorklet; JavaScript only draws the panel.",
+    validation:
+      "844 C checks, run under UndefinedBehaviorSanitizer and at -O2, including a 600-patch fuzz · 38 JS tests, including 22,000 hostile links. The native and WASM builds produce bit-identical samples. MIT.",
+    findings:
+      "The voices were tuned by measuring rendered spectra and levels, not by ear; no human has listened yet. There is no oversampling, so BELL still aliases on very high notes. Tested in headless Chrome only, with the audio muted.",
+    lessons: "Put the safety limits in the engine, then attack them with hostile input.",
+    stack: "C · WebAssembly · AudioWorklet",
+    github: `${site.github}/sideband`,
+  },
+  {
+    name: "knot",
+    tag: "TOOLING",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Draw a closed rope in 3D; the app works out which knot you tied and shows the maths, from crossings to the Alexander polynomial.",
+    problem:
+      "A tangle can't be judged by eye: the same knot shows different crossings from different angles, and an eleven-crossing mess can be the unknot.",
+    approach:
+      "Pure TypeScript finds the crossings, builds the PD code and Alexander matrix, and takes the determinant by fraction-free Bareiss elimination over BigInt polynomials, so no floating point touches a coefficient. Relaxation provably never passes the rope through itself. three.js only draws.",
+    validation:
+      "62 unit tests · 18 end-to-end tests. Every table polynomial is recomputed from Knot Atlas PD codes. 0 bad flips in 4,800+ fuzzed crossing flips. MIT.",
+    findings:
+      "The verdict says 'consistent with', never 'is': the Alexander polynomial can't tell a knot from its mirror image, and larger knots can share a small one's polynomial. Relaxing doesn't always untangle — the polynomial is what shows the eleven-crossing plate is the unknot.",
+    lessons: "Compute the exact part exactly, and word the verdict no stronger than the maths.",
+    stack: "TypeScript · three.js · WebGL2",
+    github: `${site.github}/knot`,
+  },
+  {
+    name: "stroke-order",
+    tag: "TOOLING",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Write a kanji with a finger or mouse; ink lands as a brush stroke and the page checks your stroke order and direction, stroke by stroke, across the 80 first-grade kanji.",
+    problem:
+      "Stroke-order practice needs specific feedback — which stroke comes first, which way it runs — not a right-or-wrong at the end.",
+    approach:
+      "A Kotlin Multiplatform core with no browser APIs compares each stroke with KanjiVG's reference on position, shape (discrete Fréchet distance) and heading, forwards and backwards; a sealed-class state machine turns that into a verdict and a plain sentence. Kotlin/JS compiles it for the web; the same tests run again on the JVM.",
+    validation:
+      "155 tests: 75 JVM, 57 JS, 7 data, 16 headless Chrome. A whole-set sweep catches 320/320 skipped-ahead strokes and 367/367 reversed ones, and 1,279/1,280 skips with sloppy writing. MIT code; KanjiVG data under CC BY-SA 3.0.",
+    findings:
+      "Every accuracy figure comes from simulated strokes; accuracy on real learners' handwriting is unmeasured. Some first strokes are genuinely ambiguous, because nothing is written yet to align to.",
+    lessons: "Say where the numbers came from — synthetic strokes are not real handwriting.",
+    stack: "Kotlin/JS · Kotlin Multiplatform",
+    github: `${site.github}/stroke-order`,
+  },
+];
+
 export const projects: Project[] = [
   {
     name: "hallucination-hunter",
@@ -281,6 +479,7 @@ export const projects: Project[] = [
     stack: "React · TypeScript · Cloudflare Workers · Codex SDK",
     github: `${site.github}/openai-build-week-2026`,
   },
+  ...languageApps,
   // Concept repos — clearly PLANNED, no fabricated operational metrics.
   {
     name: "spec-lint",
