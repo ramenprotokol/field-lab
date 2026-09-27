@@ -33,3 +33,6 @@ jobs:
 
       - name: Build (static export)
         run: npm run build
+
+      - name: Test (the built site)
+        run: npm test

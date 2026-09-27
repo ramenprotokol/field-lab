@@ -79,18 +79,32 @@ export default function ProjectCard({
 
         <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-line-3 pt-2.5">
           <span className="mono text-[10.5px] text-dim">{project.stack}</span>
-          {project.github ? (
-            <a
-              href={project.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mono rounded border border-line-2 px-2.5 py-1 text-[10px] tracking-[0.06em] text-fg-2 transition-colors hover:border-accent-deep hover:text-accent"
-            >
-              GITHUB →
-            </a>
-          ) : (
-            <span className="mono text-[10px] tracking-[0.06em] text-dim-2">REPO PENDING</span>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {project.live ? (
+              <a
+                href={project.live}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Live app: ${project.name} (opens in a new tab)`}
+                className="mono rounded border border-[#23332a] px-2.5 py-1 text-[10px] tracking-[0.06em] text-accent transition-colors hover:border-accent-deep hover:bg-accent/10"
+              >
+                LIVE →
+              </a>
+            ) : null}
+            {project.github ? (
+              <a
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`GitHub source: ${project.name} (opens in a new tab)`}
+                className="mono rounded border border-line-2 px-2.5 py-1 text-[10px] tracking-[0.06em] text-fg-2 transition-colors hover:border-accent-deep hover:text-accent"
+              >
+                GITHUB →
+              </a>
+            ) : (
+              <span className="mono text-[10px] tracking-[0.06em] text-dim-2">REPO PENDING</span>
+            )}
+          </div>
         </div>
       </div>
     </article>

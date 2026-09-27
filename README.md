@@ -64,6 +64,7 @@ npm run dev        # http://localhost:3000
 npm run typecheck  # tsc --noEmit
 npm run lint       # next lint
 npm run build      # production static export -> ./out
+npm test           # node:test over ./out: Proof Wall links, live deployments, the PUBLIC_REPOS count
 ```
 
 ## Build & deploy (Cloudflare Pages)

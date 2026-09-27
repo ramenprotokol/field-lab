@@ -188,6 +188,7 @@ export type ProjectTag = "AI EVALUATION" | "SYSTEM" | "TOOLING" | "RELIABILITY";
 /**
  * Reusable project record. Real shipped repos set `real: true` and a `github`
  * link; concept repos are `status: "PLANNED"` and carry no fabricated metrics.
+ * Repos with a public deployment also set `live`, shown as a LIVE link.
  */
 export type Project = {
   name: string;
@@ -202,6 +203,7 @@ export type Project = {
   lessons: string;
   stack: string;
   github: string | null;
+  live?: string; // public deployment, if there is one
 };
 
 /**
@@ -228,6 +230,7 @@ export const languageApps: Project[] = [
     lessons: "Measure the speed claim on the user's machine, or don't make it.",
     stack: "Rust · WebAssembly · JavaScript",
     github: `${site.github}/overprint`,
+    live: "https://overprint-1iy.pages.dev",
   },
   {
     name: "sky-report",
@@ -247,6 +250,7 @@ export const languageApps: Project[] = [
     lessons: "Separate the data from the style on screen, then measure the data.",
     stack: "GLSL · TypeScript · Cloudflare Workers",
     github: `${site.github}/sky-report`,
+    live: "https://sky-report-9t3.pages.dev",
   },
   {
     name: "small-print",
@@ -266,6 +270,7 @@ export const languageApps: Project[] = [
     lessons: "Check the model's evidence mechanically, and count what you throw away.",
     stack: "Python · Cloudflare Workers · D1 · Claude API",
     github: `${site.github}/small-print`,
+    live: "https://small-print.pages.dev",
   },
   {
     name: "silt",
@@ -285,6 +290,7 @@ export const languageApps: Project[] = [
     lessons: "Book every source and sink — a conservation test catches what a screenshot won't.",
     stack: "Zig · WebAssembly · WebGL2",
     github: `${site.github}/silt`,
+    live: "https://silt-62k.pages.dev",
   },
   {
     name: "tide-table",
@@ -304,6 +310,7 @@ export const languageApps: Project[] = [
     lessons: "Model the library production actually runs, then test the model against it.",
     stack: "Go · WebAssembly · JavaScript",
     github: `${site.github}/tide-table`,
+    live: "https://tide-table.pages.dev",
   },
   {
     name: "paren",
@@ -323,6 +330,7 @@ export const languageApps: Project[] = [
     lessons: "Refuse what you don't support, by name, instead of half-supporting it.",
     stack: "ClojureScript · shadow-cljs",
     github: `${site.github}/paren`,
+    live: "https://paren-23l.pages.dev",
   },
   {
     name: "single-track",
@@ -342,6 +350,7 @@ export const languageApps: Project[] = [
     lessons: "Prove what you can; label the rest as a heuristic.",
     stack: "Elm · SVG",
     github: `${site.github}/single-track`,
+    live: "https://single-track.pages.dev",
   },
   {
     name: "sideband",
@@ -361,6 +370,7 @@ export const languageApps: Project[] = [
     lessons: "Put the safety limits in the engine, then attack them with hostile input.",
     stack: "C · WebAssembly · AudioWorklet",
     github: `${site.github}/sideband`,
+    live: "https://sideband-3ds.pages.dev",
   },
   {
     name: "knot",
@@ -380,6 +390,7 @@ export const languageApps: Project[] = [
     lessons: "Compute the exact part exactly, and word the verdict no stronger than the maths.",
     stack: "TypeScript · three.js · WebGL2",
     github: `${site.github}/knot`,
+    live: "https://knot-e6b.pages.dev",
   },
   {
     name: "stroke-order",
@@ -399,6 +410,7 @@ export const languageApps: Project[] = [
     lessons: "Say where the numbers came from — synthetic strokes are not real handwriting.",
     stack: "Kotlin/JS · Kotlin Multiplatform",
     github: `${site.github}/stroke-order`,
+    live: "https://stroke-order-7cn.pages.dev",
   },
 ];
 
