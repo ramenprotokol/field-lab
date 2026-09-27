@@ -254,7 +254,7 @@ export const languageApps: Project[] = [
   },
   {
     name: "small-print",
-    tag: "AI EVALUATION",
+    tag: "TOOLING",
     status: "ACTIVE",
     real: true,
     summary:

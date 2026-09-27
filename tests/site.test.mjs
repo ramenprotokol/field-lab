@@ -121,6 +121,9 @@ test("sky-report and small-print cards describe what their live sites do now", (
   assert.ok(text.includes("a Cloudflare Pages Function proxies aviationweather.gov"));
   assert.ok(text.includes("a reading is free and the text never leaves the device"));
   assert.ok(text.includes("no AI"));
+  // A reader with no AI on its live site isn't filed under AI EVALUATION.
+  const smallPrint = page("proof-wall/").split("<article").find((a) => a.includes(">small-print</span>"));
+  assert.match(smallPrint, />TOOLING</);
 });
 
 test("PUBLIC_REPOS on the home page equals the shipped repos on the Proof Wall", () => {
