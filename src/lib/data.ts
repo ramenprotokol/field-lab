@@ -511,6 +511,7 @@ export const projects: Project[] = [
     lessons: "Give the human every consequential gate, not just the final one — isolation without an approval boundary isn't supervision.",
     stack: "React · TypeScript · Cloudflare Workers · Codex SDK",
     github: `${site.github}/openai-build-week-2026`,
+    live: "https://control-room-build-week-2026.pages.dev/",
   },
   ...languageApps,
   // Concept repos — clearly PLANNED, no fabricated operational metrics.

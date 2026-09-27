@@ -40,6 +40,7 @@ function cards() {
 // Every deployment the wall links to. Keep in step with `live` in src/lib/data.ts.
 const LIVE = {
   overkill: "https://overkill-95w.pages.dev",
+  "control-room": "https://control-room-build-week-2026.pages.dev/",
   overprint: "https://overprint-1iy.pages.dev",
   "sky-report": "https://sky-report-9t3.pages.dev",
   "small-print": "https://small-print.pages.dev",
