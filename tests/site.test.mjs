@@ -39,6 +39,7 @@ function cards() {
 
 // Every deployment the wall links to. Keep in step with `live` in src/lib/data.ts.
 const LIVE = {
+  overkill: "https://overkill-95w.pages.dev",
   overprint: "https://overprint-1iy.pages.dev",
   "sky-report": "https://sky-report-9t3.pages.dev",
   "small-print": "https://small-print.pages.dev",
@@ -88,6 +89,31 @@ test("no case file still says a deployed app is undeployed or in demo mode", () 
   const text = page("proof-wall/").replace(/<[^>]+>/g, " ");
   assert.doesNotMatch(text, /demo mode/i);
   assert.doesNotMatch(text, /\bnot deployed\b|until it is deployed/i);
+});
+
+test("OVERKILL leads the Proof Wall and the home page's featured evidence", () => {
+  const [first] = cards();
+  assert.equal(first.name, "overkill");
+  assert.equal(first.github[0]?.attrs.href, "https://github.com/ramenprotokol/overkill");
+  const featured = [...page("").matchAll(/<span class="mono text-\[13px\] text-fg">([^<]+)<\/span>/g)].map((m) => m[1]);
+  assert.equal(featured.length, 3);
+  assert.equal(featured[0], "overkill");
+});
+
+test("OVERKILL's case file and home card keep its honest limits", () => {
+  const plain = (html) => html.replace(/<[^>]+>/g, " ").replace(/&#x27;/g, "'");
+  const home = plain(page(""));
+  assert.ok(home.includes("designed offline; live generation needs an API key and isn't running"));
+  const text = plain(page("proof-wall/"));
+  for (const phrase of [
+    "designed offline",
+    "live generation needs an API key and isn't running",
+    "could read the source",
+    "not an eval of the live agent",
+    "'let the dog out' chains 5 of its 11 parts",
+  ]) {
+    assert.ok(text.includes(phrase), `missing: ${phrase}`);
+  }
 });
 
 test("sky-report and small-print cards describe what their live sites do now", () => {

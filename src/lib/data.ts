@@ -415,6 +415,27 @@ export const languageApps: Project[] = [
 ];
 
 export const projects: Project[] = [
+  // Featured: first here puts it at the top of the Proof Wall and on the home page.
+  {
+    name: "overkill",
+    tag: "AI EVALUATION",
+    status: "ACTIVE",
+    real: true,
+    summary:
+      "Claude Opus 5.5 overengineers chores as chain-reaction machines; a deterministic physics simulation, not the model, decides whether each one works, and re-runs it in your browser. The machines on the site were designed offline; live generation needs an API key and isn't running.",
+    problem:
+      "A model grading its own design proves nothing, and a chain-reaction machine is easy to fake: a ball that would have fallen onto the switch anyway looks just like a working chain.",
+    approach:
+      "One TypeScript core runs the same checks in Node and in the browser: a JSON blueprint goes into Rapier 2D's deterministic build, and a part joins the chain only if the push changed its path, measured against a push-free twin of the machine stepped in lockstep. A success needs 5+ chained parts reaching a finale that stays untouched when nothing pushes. The site's machines were designed offline by Claude Opus 5.5 with the same tools and checks; live generation needs an API key and isn't running.",
+    validation:
+      "230 unit tests · 6 end-to-end tests on the built site. The suite re-simulates all 19 stored attempts, and each machine re-runs in the visitor's browser with its trace hash shown next to the one recorded in Node. An independent review tightened the chain rule; no stored result changed. MIT.",
+    findings:
+      "10 of the 20 eval chores are on the site, each working within 1–3 attempts, with all 9 failed revisions kept. The offline designer could read the source, engine geometry included, so this is not an eval of the live agent. Two machines are weak: 'let the dog out' chains 5 of its 11 parts, and 'turn off the light' is mostly dominoes.",
+    lessons: "Let the simulator be the judge, and say exactly what an offline run can't prove.",
+    stack: "TypeScript · Rapier 2D · WebAssembly · SVG",
+    github: `${site.github}/overkill`,
+    live: "https://overkill-95w.pages.dev",
+  },
   {
     name: "hallucination-hunter",
     tag: "AI EVALUATION",
