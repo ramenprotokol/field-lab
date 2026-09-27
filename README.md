@@ -47,9 +47,9 @@ It is not a startup site, a SaaS landing page, or a marketing site. It is a work
 The brand rule is simple: **never present fabricated numbers as real.** This site ships with
 illustrative content to demonstrate the layout, and every synthetic dataset is marked in the UI as
 `DEMO DATA`, `SAMPLE`, or `PLANNED`. The only operational figure presented as real is the count of
-public repositories. The two shipped repositories — [`hallucination-hunter`](https://github.com/ramenprotokol/hallucination-hunter)
-and [`ai-delivery-engineering`](https://github.com/ramenprotokol/ai-delivery-engineering) — are real
-and link to their source; concept repositories are labelled `PLANNED` and carry no invented metrics.
+public repositories, derived from the shipped entries on the Proof Wall (`src/lib/data.ts`). Shipped
+repositories are real and link to their source, and to the live app where one is deployed; concept
+repositories are labelled `PLANNED` and carry no invented metrics.
 
 ## Develop
 

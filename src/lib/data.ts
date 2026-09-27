@@ -6,7 +6,7 @@ import { site } from "./site";
  *
  * The brand rule is simple: never present fabricated operational numbers as
  * real. Datasets below that are illustrative carry a `demo` label, surfaced in
- * the UI by <DemoBadge>. The two shipped repositories are real and carry
+ * the UI by <DemoBadge>. The shipped repositories are real and carry
  * verifiable links instead.
  * ------------------------------------------------------------------ */
 export const DEMO = {
@@ -242,13 +242,13 @@ export const languageApps: Project[] = [
     problem:
       "A METAR (BKN025 27015KT 9999) describes the sky precisely, but to most people it reads like line noise.",
     approach:
-      "A WebGL2 shader integrates atmospheric scattering and ray-marches each reported cloud layer as a volume; visibility becomes haze, wind moves the clouds, and the sun sits where it was at observation time. TypeScript parses the report and sets every shader input; a cached Cloudflare Worker proxies aviationweather.gov.",
+      "A WebGL2 shader integrates atmospheric scattering and ray-marches each reported cloud layer as a volume; visibility becomes haze, wind moves the clouds, and the sun sits where it was at observation time. TypeScript parses the report and sets every shader input. On the live site a Cloudflare Pages Function proxies aviationweather.gov with a five-minute cache; bundled recorded reports are only a fallback, labelled RECORDED SAMPLE.",
     validation:
-      "186 unit tests · 14 headless-Chrome tests. The parser is cross-checked against the Aviation Weather Center's own decoder on 400 real reports; sun elevation matches astropy to 0.03° on 12 cases; cloud cover seen from below is within 0.9 points of the reported amount across 18 reports. MIT.",
+      "196 unit tests · 23 smoke tests, 10 of them in headless Chrome and 4 against a local Wrangler Pages server. The parser is cross-checked against the Aviation Weather Center's own decoder on 400 real reports; sun elevation matches astropy to 0.03° on 12 cases; cloud cover seen from below is within 0.9 points of the reported amount across 18 reports. MIT.",
     findings:
-      "Coverage was only honest after calibration: seen from below, a thick layer covers more sky than any one slice of it. Cloud shapes are still procedural — a METAR gives amount and base, nothing else — and the page says which parts are data and which are style.",
+      "Coverage was only honest after calibration: seen from below, a thick layer covers more sky than any one slice of it. Cloud shapes are still procedural — a METAR gives amount and base, nothing else — and the page says which parts are data and which are style. On the deployed site the shared cache was seen working (a MISS, then a HIT); CPU time per request is still unmeasured.",
     lessons: "Separate the data from the style on screen, then measure the data.",
-    stack: "GLSL · TypeScript · Cloudflare Workers",
+    stack: "GLSL · TypeScript · Cloudflare Pages Functions",
     github: `${site.github}/sky-report`,
     live: "https://sky-report-9t3.pages.dev",
   },
@@ -258,17 +258,17 @@ export const languageApps: Project[] = [
     status: "ACTIVE",
     real: true,
     summary:
-      "Paste a Terms of Service; get a clause-by-clause map of who each clause favours, each reading pinned to an exact quote checked against your text.",
+      "Paste any Terms of Service and get a free clause-by-clause map of who each clause favours: 53 hand-written rules in Python run in your browser, with no AI, and the text never leaves the device.",
     problem:
-      "A model's summary of legal text sounds confident, and a paraphrase gives you nothing to check it against.",
+      "A summary of legal text sounds confident and gives you nothing to check it against — and a reader that needs a paid model can't be free for every visitor.",
     approach:
-      "A Python Worker (Pyodide on Cloudflare) splits the text into clauses and asks Claude for a structured reading of each. Every quote must be an exact substring inside the clause it labels; readings that fail are dropped and counted on the page. A Durable Object caps daily model calls; D1 caches verified results.",
+      "Pyodide (CPython compiled to WebAssembly) runs the project's own Python in a Web Worker: a clause segmenter, then 53 rules built from 136 bounded regular expressions, with negation and near-miss checks. Every matched quote goes through the verifier written for model output — an exact substring inside the clause it labels — and drops are counted on the page. A Claude reader exists in the repo but isn't deployed.",
     validation:
-      "164 pytest · 23 Node tests, plus an end-to-end run of the real Worker in local workerd against a mocked Messages API. No paid API calls were made while building it; demo mode reads three fictional exhibits. MIT.",
+      "297 pytest · 33 Node tests, including headless Chrome with the strict CSP enforced (no upload during a reading) and the built bundle returning exactly what CPython returns. On 24 spot-check sentences written after the rules: 12 labelled as expected, 12 unlabelled, 0 wrong. MIT; Pyodide and CPython notices ship with the site.",
     findings:
-      "The verifier proves a quote is in the text, not that the label is right — so no reading appears without its source clause. CPU time on the free plan and real token use stay unmeasured until it is deployed.",
-    lessons: "Check the model's evidence mechanically, and count what you throw away.",
-    stack: "Python · Cloudflare Workers · D1 · Claude API",
+      "When a rule fires its label is usually right, but on unseen text it stays silent on about half the clauses that matter, and the page says so. The verifier proves a quote is in the text, not that the label is right. The first reading downloads a 13.6 MB Python runtime, stated before it starts.",
+    lessons: "Check every quote mechanically, whoever wrote the reading, and say what the rules can miss.",
+    stack: "Python · Pyodide · WebAssembly · Web Workers",
     github: `${site.github}/small-print`,
     live: "https://small-print.pages.dev",
   },

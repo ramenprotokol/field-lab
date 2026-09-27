@@ -84,6 +84,12 @@ test("outbound card links are https, open in a new tab and carry an accessible n
   }
 });
 
+test("no case file still says a deployed app is undeployed or in demo mode", () => {
+  const text = page("proof-wall/").replace(/<[^>]+>/g, " ");
+  assert.doesNotMatch(text, /demo mode/i);
+  assert.doesNotMatch(text, /\bnot deployed\b|until it is deployed/i);
+});
+
 test("PUBLIC_REPOS on the home page equals the shipped repos on the Proof Wall", () => {
   const shown = Number(page("").match(/PUBLIC_REPOS<\/div><div[^>]*>(\d+)<\/div>/)?.[1]);
   const shipped = cards().filter((c) => c.status === "ACTIVE");
