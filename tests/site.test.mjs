@@ -90,6 +90,13 @@ test("no case file still says a deployed app is undeployed or in demo mode", () 
   assert.doesNotMatch(text, /\bnot deployed\b|until it is deployed/i);
 });
 
+test("sky-report and small-print cards describe what their live sites do now", () => {
+  const text = page("proof-wall/").replace(/<[^>]+>/g, " ");
+  assert.ok(text.includes("a Cloudflare Pages Function proxies aviationweather.gov"));
+  assert.ok(text.includes("a reading is free and the text never leaves the device"));
+  assert.ok(text.includes("no AI"));
+});
+
 test("PUBLIC_REPOS on the home page equals the shipped repos on the Proof Wall", () => {
   const shown = Number(page("").match(/PUBLIC_REPOS<\/div><div[^>]*>(\d+)<\/div>/)?.[1]);
   const shipped = cards().filter((c) => c.status === "ACTIVE");

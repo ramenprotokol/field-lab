@@ -262,7 +262,7 @@ export const languageApps: Project[] = [
     problem:
       "A summary of legal text sounds confident and gives you nothing to check it against — and a reader that needs a paid model can't be free for every visitor.",
     approach:
-      "Pyodide (CPython compiled to WebAssembly) runs the project's own Python in a Web Worker: a clause segmenter, then 53 rules built from 136 bounded regular expressions, with negation and near-miss checks. Every matched quote goes through the verifier written for model output — an exact substring inside the clause it labels — and drops are counted on the page. A Claude reader exists in the repo but isn't deployed.",
+      "Pyodide (CPython compiled to WebAssembly) runs the project's own Python in a Web Worker, so a reading is free and the text never leaves the device: a clause segmenter, then 53 hand-written rules built from 136 bounded regular expressions, with negation and near-miss checks — no AI. Every matched quote goes through the verifier written for model output — an exact substring inside the clause it labels — and drops are counted on the page. A Claude reader exists in the repo but isn't deployed.",
     validation:
       "297 pytest · 33 Node tests, including headless Chrome with the strict CSP enforced (no upload during a reading) and the built bundle returning exactly what CPython returns. On 24 spot-check sentences written after the rules: 12 labelled as expected, 12 unlabelled, 0 wrong. MIT; Pyodide and CPython notices ship with the site.",
     findings:
