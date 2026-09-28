@@ -7,20 +7,24 @@ on:
 
 permissions:
   contents: read
-  deployments: write
 
 # Never run two deploys at once; cancel an in-flight one if a newer push lands.
 concurrency:
   group: pages-deploy
   cancel-in-progress: true
 
+# Two jobs, so the Cloudflare token never shares a runner with the dependency tree.
+# `build` installs and builds with no secrets and uploads ./out. `deploy` gets the
+# token, downloads that artifact and runs wrangler: no checkout, install or build.
 jobs:
-  deploy:
-    name: build · deploy
+  build:
+    name: build (no secrets)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      # Actions are pinned to full commit SHAs so a moved tag can't change what runs
-      # next to the Cloudflare token. The checkout token is not kept on disk either.
+      # Actions are pinned to full commit SHAs so a moved tag can't change what runs.
+      # The checkout token is not kept on disk either.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
@@ -37,9 +41,36 @@ jobs:
       - name: Build (static export)
         run: npm run build
 
+      - name: Upload the static site
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: site
+          path: out/
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    name: deploy (Cloudflare Pages)
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Download the static site
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: site
+          path: out
+
+      # Wrangler 4 needs Node 22 or newer. No cache: nothing from the build job is reused.
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3.15.0
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: "4.136.3"
           command: pages deploy ./out --project-name=field-lab --branch=main
