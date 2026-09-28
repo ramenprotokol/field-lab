@@ -204,6 +204,7 @@ export type Project = {
   stack: string;
   github: string | null;
   live?: string; // public deployment, if there is one
+  sourcePrivate?: boolean; // shipped, but the repository is private (no public source link)
 };
 
 /**
@@ -486,12 +487,13 @@ export const projects: Project[] = [
     approach:
       "Pluggable checks behind one interface: four AUTO checks (changelog, CI status, pinned deps, clean tagged release point) plus attestations a human signs in `release.yaml`. Exit-code driven so CI can actually block a release.",
     validation:
-      "48 tests · green CI · ruff-clean · v0.1.0, MIT. It gates its own releases. An adversarial pass fixed three crash-on-malformed-manifest bugs.",
+      "90 tests · ruff-clean · v0.1.0, MIT. It gates its own releases. An adversarial pass fixed three crash-on-malformed-manifest bugs, and a security review hardened how it reads manifests and git.",
     findings:
       "Every result is labeled AUTO (machine-proven) or ATTESTED (human-claimed), and the tool never upgrades one to the other — it stays honest about what it cannot verify.",
     lessons: "Enforce the checklist, don't just publish it. Label what's proven vs. trusted.",
     stack: "Python · pytest · ruff",
-    github: `${site.github}/delivery-gate`,
+    github: null,
+    sourcePrivate: true,
   },
   {
     name: "control-room",
@@ -510,7 +512,8 @@ export const projects: Project[] = [
       "Splitting investigation, construction, and verification across roles that can't approve their own handoff catches what a single unsupervised agent would have shipped.",
     lessons: "Give the human every consequential gate, not just the final one — isolation without an approval boundary isn't supervision.",
     stack: "React · TypeScript · Cloudflare Workers · Codex SDK",
-    github: `${site.github}/openai-build-week-2026`,
+    github: null,
+    sourcePrivate: true,
     live: "https://control-room-build-week-2026.pages.dev/",
   },
   ...languageApps,
@@ -582,7 +585,7 @@ export const projectFilters: (ProjectTag | "ALL")[] = [
 ];
 
 /** The one genuinely real, claimable figure on the dashboard. */
-export const liveRepoCount = projects.filter((p) => p.real).length;
+export const liveRepoCount = projects.filter((p) => p.real && p.github).length;
 
 /**
  * Dashboard telemetry. Every value is illustrative and labelled DEMO in the UI,

@@ -33,6 +33,7 @@ function cards() {
         status: html.match(/>(ACTIVE|PLANNED)</)?.[1],
         live: links.filter((a) => a.text.startsWith("LIVE")),
         github: links.filter((a) => a.text.startsWith("GITHUB")),
+        sourcePrivate: html.includes(">SOURCE PRIVATE<"),
       };
     });
 }
@@ -130,6 +131,9 @@ test("sky-report and small-print cards describe what their live sites do now", (
 test("PUBLIC_REPOS on the home page equals the shipped repos on the Proof Wall", () => {
   const shown = Number(page("").match(/PUBLIC_REPOS<\/div><div[^>]*>(\d+)<\/div>/)?.[1]);
   const shipped = cards().filter((c) => c.status === "ACTIVE");
-  assert.equal(shown, shipped.length);
-  assert.equal(shipped.filter((c) => c.github.length === 1).length, shipped.length, "every shipped repo links its source");
+  const withSource = shipped.filter((c) => c.github.length === 1);
+  assert.equal(shown, withSource.length);
+  for (const c of shipped.filter((c) => c.github.length === 0)) {
+    assert.ok(c.sourcePrivate, `${c.name}: a shipped card without a GITHUB link must say SOURCE PRIVATE`);
+  }
 });

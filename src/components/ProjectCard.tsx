@@ -102,7 +102,9 @@ export default function ProjectCard({
                 GITHUB →
               </a>
             ) : (
-              <span className="mono text-[10px] tracking-[0.06em] text-dim-2">REPO PENDING</span>
+              <span className="mono text-[10px] tracking-[0.06em] text-dim-2">
+                {project.sourcePrivate ? "SOURCE PRIVATE" : "REPO PENDING"}
+              </span>
             )}
           </div>
         </div>
