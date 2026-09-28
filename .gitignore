@@ -42,4 +42,13 @@ _private/
 design/
 
 # Agent state, browser-test output and local Cloudflare state — never commit
- .claude/ .codex/ .specstory/ .playwright-mcp/ .playwright-cli/ test-results/ playwright-report/ .wrangler/ .dev.vars .dev.vars.*
+.claude/
+.codex/
+.specstory/
+.playwright-mcp/
+.playwright-cli/
+test-results/
+playwright-report/
+.wrangler/
+.dev.vars
+.dev.vars.*
