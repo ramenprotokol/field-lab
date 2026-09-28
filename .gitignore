@@ -40,3 +40,6 @@ _private/
 # the raw design-tool export is a local reference only — it is not used by the
 # build and carries stale, unreviewed strings, so it never ships in the repo
 design/
+
+# Agent state, browser-test output and local Cloudflare state — never commit
+ .claude/ .codex/ .specstory/ .playwright-mcp/ .playwright-cli/ test-results/ playwright-report/ .wrangler/ .dev.vars .dev.vars.*
