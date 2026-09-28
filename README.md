@@ -64,7 +64,7 @@ npm run dev        # http://localhost:3000
 npm run typecheck  # tsc --noEmit
 npm run lint       # next lint
 npm run build      # production static export -> ./out
-npm test           # node:test over ./out: Proof Wall links, live deployments, the PUBLIC_REPOS count
+npm test           # node:test over ./out (Proof Wall links, live deployments, PUBLIC_REPOS) and the CI workflows
 ```
 
 ## Build & deploy (Cloudflare Pages)
@@ -73,7 +73,18 @@ npm test           # node:test over ./out: Proof Wall links, live deployments, t
 npm run build      # outputs a static site to ./out
 ```
 
-Cloudflare Pages settings:
+Every push to `main` deploys through GitHub Actions ([`deploy.yml`](.github/workflows/deploy.yml)),
+in two jobs so the Cloudflare token never shares a runner with the npm dependency tree:
+
+1. **build** has no secrets and read-only permissions. It runs `npm ci` and `npm run build` and
+   uploads `out/` as a workflow artifact.
+2. **deploy** gets the Cloudflare token. It downloads that artifact and runs
+   `wrangler pages deploy ./out` through `cloudflare/wrangler-action`, which installs one exact,
+   pinned wrangler version. It does not check out the repo, install the lockfile or build anything.
+
+Every action is pinned to a full commit SHA, and `npm test` checks all of the above.
+
+To deploy a fork through Cloudflare's own Git integration instead, use these Pages settings:
 
 - **Build command:** `npm run build`
 - **Build output directory:** `out`
