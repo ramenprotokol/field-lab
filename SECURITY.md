@@ -2,7 +2,10 @@
 
 This is a static website with no backend, no authentication, and no user data.
 The attack surface is limited to the published HTML/CSS/JS and its security
-headers (see [`public/_headers`](public/_headers)).
+headers (see [`public/_headers`](public/_headers)). The GitHub Actions workflows
+pin every action to a full commit SHA, run with read-only permissions, and only
+the push-to-`main` deploy job can see the Cloudflare token (never a pull request);
+`npm test` checks those properties.
 
 ## Reporting a vulnerability
 
